@@ -13,7 +13,8 @@ class Stop
     $stmt->bindParam(':trip_id', $trip_id);
     $stmt->bindParam(':nation_id', $nation_id);
     $stmt->execute();
-    $stop = $this->get($this->db->lastInsertId());
+    $lastInsertId = $this->db->lastInsertId();
+    $stop = $this->get($lastInsertId);
     return $stop;
   }
 

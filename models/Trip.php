@@ -17,23 +17,42 @@ class Trip
     $tripId = $this->db->lastInsertId();
     // Fetch the trip with its associated nations
     $trip = $this->get($tripId);
-    print_r($trip);
 
     return $trip;
   }
 
-  public function get($id)
+  public function getTripWithStops($id)
   {
+    $stmt = $this->db->prepare("SELECT * FROM itinerary_stop WHERE trip_id = :id");
+    $stmt->bindParam(':id', $id);
+    $stmt->execute();
+    $stops = $stmt->fetchAll(PDO::FETCH_ASSOC);
+  
+    if (empty($stops)) {
+      return $this->get($id);
+    }
+
     $stmt = $this->db->prepare("
     SELECT t.*, n.*
     FROM trip t
-    INNER JOIN itinerary_stop is ON t.id = is.trip_id
-    INNER JOIN nation n ON is.nation_id = n.id
+    INNER JOIN itinerary_stop it_stop ON t.id = it_stop.trip_id
+    INNER JOIN nation n ON it_stop.nation_id = n.id
     WHERE t.id = :trip_id
   ");
     $stmt->bindParam(':trip_id', $id);
     $stmt->execute();
     $trip = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+  
+    return $trip;
+  }
+
+  public function get($id)
+  {
+    $stmt = $this->db->prepare("SELECT * FROM trip WHERE id = :id");
+    $stmt->bindParam(':id', $id);
+    $stmt->execute();
+    $trip = $stmt->fetch(PDO::FETCH_ASSOC);
     return $trip;
   }
 
@@ -54,8 +73,9 @@ class Trip
     return $stmt->execute();
   }
 
-  public function getAll($nation = null, $places = null)
+  public function findAll($nation = null, $places = null)
   {
+
     $query = "SELECT * FROM trip";
     $params = [];
 

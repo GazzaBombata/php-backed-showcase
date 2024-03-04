@@ -4,9 +4,9 @@ include './controllers/TripController.php';
 include './controllers/StopController.php';
 
 
-$tripController = new TripController($db);
 $nationController = new NationController($db);
-$stopController = new StopController($db);
+$tripController = new TripController($db, $nationController);
+$stopController = new StopController($db, $tripController->getTrip(), $nationController->getNation());
 
 
 function route($req, $path, $controllerInstance, $method) {
@@ -36,6 +36,6 @@ route('DELETE', '/trips/{id}', $tripController, 'delete');
 
 route('POST', '/stops', $stopController, 'create');
 route('PUT', '/stops/{id}', $stopController, 'update');
-route('GET', '/stops', $stopController, 'get');
+route('GET', '/stops', $stopController, 'getAll');
 route('GET','/stops/{id}', $stopController, 'get');
 route('DELETE', '/stops/{id}', $stopController, 'delete');

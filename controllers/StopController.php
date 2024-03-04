@@ -7,10 +7,17 @@ class StopController
   protected $stop;
   protected $db;
 
-  public function __construct(Database $db)
+  private $trip;
+  private $nation;
+
+
+
+  public function __construct(Database $db, Trip $trip, Nation $nation)
   {
     $this->db = $db->getDb();
     $this->stop = new Stop($this->db);
+    $this->trip = $trip;
+    $this->nation = $nation;
   }
 
   public function get($id)
@@ -42,8 +49,10 @@ class StopController
     try {
       Validator::validateId($trip_id);
       Validator::validateId($nation_id);
-      $this->stop->create($trip_id, $nation_id);
-      $stop = $this->stop->get($this->db->lastInsertId());
+      Validator::validateNation($nation_id, $this->nation);
+      Validator::validateTrip($trip_id, $this -> trip);
+      print_r($trip_id);
+      $stop = $this->stop->create($trip_id, $nation_id);
       http_response_code(200);
       echo json_encode($stop);
     } catch (InvalidArgumentException $e) {
@@ -51,7 +60,7 @@ class StopController
       echo json_encode(['error' => $e->getMessage()]);
     } catch (Exception $e) {
       http_response_code(500);
-      echo json_encode(['error' => 'An error occurred']);
+      echo json_encode(['error' => $e->getMessage()]);
     }
   }
 
@@ -61,9 +70,10 @@ class StopController
     $trip_id = $data['trip_id'];
     $nation_id = $data['nation_id'];
     try {
-      Validator::validateId($id);
       Validator::validateId($trip_id);
       Validator::validateId($nation_id);
+      Validator::validateNation($nation_id, $this->nation);
+      Validator::validateTrip($trip_id, $this -> trip);
       $this->stop->update($id, $trip_id, $nation_id);
       $stop = $this->stop->get($id);
       if (!$stop) {
@@ -94,7 +104,7 @@ class StopController
       }
       $message = $this->stop->delete($id);
       http_response_code(200);
-      echo json_encode($message);
+      echo json_encode(['message'=> 'Stop deleted']);
     } catch (InvalidArgumentException $e) {
       http_response_code(400);
       echo json_encode(['error' => $e->getMessage()]);

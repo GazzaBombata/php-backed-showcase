@@ -13,14 +13,17 @@ class NationController
     $this->nation = new Nation($this->db);
   }
 
+  public function getNation() {
+    return $this->nation;
+  }
+
   public function create()
   { 
     $data = json_decode(file_get_contents('php://input'), true);
     try {
       Validator::validateTitle($data);
       $title = $data['title'];
-      $this->nation->create($title);
-      $nation = $this->nation->get($this->db->lastInsertId());
+      $nation = $this->nation->create($title);
       http_response_code(200);
       echo json_encode($nation);
     } catch (InvalidArgumentException $e) {

@@ -1,7 +1,5 @@
 <?php
 
-$config = require_once 'config.php';
-
 class Database
 {
   protected $db;
