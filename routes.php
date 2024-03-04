@@ -8,10 +8,9 @@ $nationController = new NationController($db);
 $tripController = new TripController($db, $nationController);
 $stopController = new StopController($db, $tripController->getTrip(), $nationController->getNation());
 
-
 function route($req, $path, $controllerInstance, $method) {
   $request_method = $_SERVER["REQUEST_METHOD"];
-  $path_info = $_SERVER['PATH_INFO'];
+  $path_info = explode('?', $_SERVER['REQUEST_URI'])[0];
   $path = str_replace('{id}', '([^/]+)', $path);
   if ($request_method == $req && preg_match("@^$path$@", $path_info, $matches)) {
       $id = isset($matches[1]) ? $matches[1] : null;
@@ -21,6 +20,7 @@ function route($req, $path, $controllerInstance, $method) {
       return $controllerInstance->$method();
   }
 }
+
 
 route('POST', '/nations', $nationController, 'create');
 route('PUT', '/nations/{id}', $nationController, 'update');
