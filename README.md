@@ -16,6 +16,6 @@ This project is a showcase of a backend application built using PHP without the 
 
 ## Installation
 
-1. Clone the repository: `git clone https://github.com/username/repository.git`
+1. Clone the repository: `git clone https://github.com/GazzaBombata/php-backend-showcase/`
 2. Create a `config.php` file and configure your database settings
 3. Run the application: `php -S localhost:8000`
